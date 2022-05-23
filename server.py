@@ -17,7 +17,7 @@ def optimize():
     response = flask.make_response(jsonify(ret))
     return response
 
-@app.route('/ready', method=['GET'])
+@app.route('/ready', methods=['GET'])
 def ready():
     response = flask.make_response(optimizer.ready())
     response.status_code = 200

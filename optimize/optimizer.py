@@ -19,7 +19,7 @@ spec:
 '''
 
 def ready():
-    return True
+    return 'ready'
 
 # 修改此方法实现自己的网格资源优化逻辑
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
@@ -46,9 +46,9 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     optimize_result = {
         'resource': [ # 通过resource字段为Sidecar容器分配资源，分配的总资源量分别不得超过CPU和内存资源上限
             {
-                'service': containers[0], # 需要修改资源分配的Sidecar所属服务
+                'service': containers[0]['service_name'], # 需要修改资源分配的Sidecar所属服务
                 'cpu': 0.1, # 需要为该服务Sidecar设置的CPU资源上限，单位：核
-                'memory': 25600000# 需要为该服务Sidecar设置的内存资源上限，单位：Byte
+                'memory': 512000000# 需要为该服务Sidecar设置的内存资源上限，单位：Byte
             }
         ],
         'istio_cr': [sidecar_example], # 通过istio_cr字段向服务网格应用Sidecar或EnvoyFilter资源来进行优化
