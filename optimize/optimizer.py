@@ -57,7 +57,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
             # 参考：https://help.aliyun.com/document_detail/349282.html
             'multi_buffer': { 
                 'enabled': True,
-                'poll_delay': '0.2'
+                'poll_delay': '0.2s'
             }
         }
     } 
