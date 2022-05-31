@@ -23,8 +23,6 @@
 每轮接受服务网格输入后，系统都可以返回不同维度的优化配置，评测程序会帮助将系统返回的优化配置应用在服务网格平台中，以达到优化的目标。优化的目标是使得在Sidecar代理容器资源占用尽可能小的情况下，网关发送的请求的时延尽可能低。<br />优化配置包括以下部分：<br />1、分配资源值：系统可以为每个服务的Sidecar容器指定需要分配多少的CPU和内存资源。<br />**注意**：为Sidecar分配的CPU资源不得小于0.1核、内存资源不得小于128Mi。否则将记为0分。<br />2、平台特性：系统可以设定基于测评平台的multi-buffer特性的开启或关闭、以及multi-buffer特性的pollDelay参数，以达成通信性能优化的作用。使用multi-buffer可以明显提高服务网格的性能，参赛者必须使用multi-buffer特性来优化网格通信性能，有关multi-buffer，可以参考：<br />[https://help.aliyun.com/document_detail/349282.html](https://help.aliyun.com/document_detail/349282.html)<br />3、服务网格自定义资源：系统可以返回EnvoyFilter和Sidecar两种Istio服务网格平台中的自定义资源，评测程序会将这些自定义资源应用到网格平台上。鼓励参赛者尝试使用服务网格的自定义资源优化网格配置。有关这两种自定义资源，可以参考：[https://istio.io/latest/zh/docs/reference/config/networking/sidecar/](https://istio.io/latest/zh/docs/reference/config/networking/sidecar/)<br />[https://istio.io/latest/zh/docs/reference/config/networking/envoy-filter/](https://istio.io/latest/zh/docs/reference/config/networking/envoy-filter/)
 ### 评分标准
 设评测总共分为t轮，在第i轮测试中，计算以下指标：<br />1、平均时延：计算发往入口网关的所有请求的时延之均值。<br />设测试过程中共有n条发往入口网关的请求；对于每条发往入口网关的请求，设其时延为$T_{j}$,则平均时延为：<br />$T_{i}=\frac{\sum_{j=1}^{n}{T_j}}{n}$<br />以秒为单位，平均时延越低越好<br />2、资源节约率：对于为所有Sidecar分配的资源量，有一个默认的总CPU与内存资源限制（$limit_{CPU}$和$limit_{memory}$）<br />设测试过程共包含t个时段（t轮测试），每个时段内Sidecar代理CPU与内存分配值为$r_{CPUi}$和$r_{memoryi}$，则t轮总共的CPU和内存资源使用率为：<br />$R_{CPU}=\frac{limit_{CPU}}{\frac{\sum_{i=1}^{t}{r_{CPUi}}}{t}}$<br />$R_{memory}=\frac{limit_{memory}}{\frac{\sum_{i=1}^{t}{r_{memoryi}}}{t}}$<br />资源使用率越低越好<br />3、QPS $QPS_{i}$：每轮测试的QPS，QPS越高越好
-##### 最终得分
-最终计算两个维度的分数：<br />1、性能分数：衡量服务网格的性能指标<br />$Performence=\frac{\sum_{i=1}^{t}{\frac{QPS_i}{T_i}}}{t}$<br />2、资源分数：衡量服务网格的资源节约程度<br />$Resource=min(R_{CPU}*R_{memory},Resource_{base})$<br />其中，资源分数有最高分限制，$Resource_{base}$为资源分数的预设最高分。鼓励参赛者同时对网格的性能和资源两个维度进行优化。<br />最终得分为：<br />$Score=Performence \times Resource$<br />综合考虑优化方案的资源节省和时延优化能力，得分越高越好。<br />**请注意**：<br />1、在为Sidecar（istio-proxy容器）分配资源时要考虑资源限制。若某轮测试时发现参赛者为Sidecar容器分配的CPU/内存资源总量超过了该轮的资源总量限制，则该轮测试分数会记为0。<br />2、同理，为每个Sidecar（istio-proxy容器）分配的CPU资源不得小于0.1核、内存资源不得小于128Mi。否则该轮测试分数将记为0分。
 
 ## 代码说明
 ### 系统输入输出说明
@@ -100,4 +98,5 @@ POST request body为json格式，提供两个json数组，其中pods是当前集
 * Dockerfile：用于在测试提交代码时构建docker容器，**无法被修改，即使修改在构建时也会被覆盖回去**
 * optimize/optimize.py：server将调用optimize包内的optimize()和ready()两个方法、对应实现/optimize和/ready两个API。需要修改optimize包的内容来实现自定义的网格优化逻辑。由于测试分为多伦进行，可以在代码中维护每轮测试的数据和状态。
 
-**注意：不允许在代码中hack测试环境中使用的具体服务配置或请求内容**
+**注意**：
+<br />1、在为Sidecar（istio-proxy容器）分配资源时要考虑资源限制。若某轮测试时发现参赛者为Sidecar容器分配的CPU/内存资源总量超过了该轮的资源总量限制，则该轮测试分数会记为0。<br />2、同理，为每个Sidecar（istio-proxy容器）分配的CPU资源不得小于0.1核、内存资源不得小于128Mi（128000000）。否则该轮测试分数将记为0分。<br/>3、不允许在代码中hack测试环境中使用的具体服务配置或请求内容
