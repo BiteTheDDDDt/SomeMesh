@@ -18,8 +18,10 @@ spec:
     - "istio-system/*"
 '''
 
+# 修改此方法来帮助评分程序了解何时应该开始测试，当自己的系统准备好接受输入时返回200，否则返回500
+# 准备时间不能超过10分钟，否则将超时直接记为0分
 def ready():
-    return 'ready'
+    return 200
 
 # 修改此方法实现自己的网格资源优化逻辑
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
@@ -35,6 +37,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
             print(accesslog['bytes_received']) # 响应大小，e.g. 0
             print(accesslog['path']) # 请求路径，e.g. /reviews
             accesslogs.append(accesslog)
+    # 读取集群中的容器信息及资源消耗情况
     for container in containers:
         print(container['service_name']) # Pod所属的服务名称
         print(container['ip']) # Pod的IP

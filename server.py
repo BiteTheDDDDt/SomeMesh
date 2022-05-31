@@ -19,8 +19,9 @@ def optimize():
 
 @app.route('/ready', methods=['GET'])
 def ready():
-    response = flask.make_response(optimizer.ready())
-    response.status_code = 200
+    response = flask.make_response("ready")
+    response_code = optimizer.ready()
+    response.status_code = response_code
     return response
 
 if __name__ == "__main__":
