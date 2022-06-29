@@ -117,4 +117,4 @@ POST request body为json格式，提供两个json数组，其中pods是当前集
 * optimize/optimize.py：server将调用optimize包内的optimize()和ready()两个方法、对应实现/optimize和/ready两个API。需要修改optimize包的内容来实现自定义的网格优化逻辑。由于测试分为多伦进行，可以在代码中维护每轮测试的数据和状态。
 
 **注意**：
-<br />1、在为Sidecar（istio-proxy容器）分配资源时要考虑资源限制。若某轮测试时发现参赛者为Sidecar容器分配的CPU/内存资源总量超过了该轮的资源总量限制，则该轮测试分数会记为0。<br />2、同理，为每个Sidecar（istio-proxy容器）分配的CPU资源不得小于0.1核、内存资源不得小于128Mi（128000000）。否则该轮测试分数将记为0分。<br/>3、不允许在代码中hack测试环境中使用的具体服务配置或请求内容
+<br />1、在为Sidecar（istio-proxy容器）分配资源时要考虑资源限制。若某轮测试时发现参赛者为Sidecar容器分配的CPU/内存资源总量超过了该轮的资源总量限制，则分数会记为0。<br />2、同理，为每个Sidecar（istio-proxy容器）分配的CPU资源不得小于0.1核、内存资源不得小于128Mi（128000000）。否则分数将记为0分。<br/>3、不允许在代码中hack测试环境中使用的具体服务配置或请求内容

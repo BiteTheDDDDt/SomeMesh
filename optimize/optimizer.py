@@ -26,6 +26,8 @@ def ready():
 # 修改此方法实现自己的网格资源优化逻辑
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     accesslogs = []
+    print(cpu_limit) # 当前可分配给Sidecar的CPU核数上限
+    print(memory_limit) # 当前可分配给Sidecar的内存上限
     # 读取访问日志文件
     with open(accesslog_path, 'r', encoding='utf-8') as accesslog_file:
         for line in accesslog_file:
