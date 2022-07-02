@@ -53,8 +53,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         memory_limit -= resource['memory']
         resources.append(resource)
 
-    resources[0]['cpu'] += cpu_limit
-    resources[0]['memory'] += memory_limit
+    # resources[0]['cpu'] += cpu_limit
+    # resources[0]['memory'] += memory_limit
 
     optimize_result = {
         'resource': resources,
