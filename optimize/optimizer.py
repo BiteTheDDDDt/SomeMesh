@@ -21,21 +21,20 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     resources = []
     for container in containers:
         if container['container'] != 'istio-proxy':
+            cpu_limit -= container['cpu']
+            memory_limit -= container['memory']
             continue
 
-        # resource = {
-        #    'service': container['service_name'], 'cpu': 0.1, 'memory': 128000000}
-
         resource = {
-            'service': container['service_name'], 'cpu': cpu_limit, 'memory': memory_limit}
+            'service': container['service_name'], 'cpu': 0.1, 'memory': 128000000}
 
         cpu_limit -= resource['cpu']
         memory_limit -= resource['memory']
         resources.append(resource)
         break
 
-    # resources[0]['cpu'] += cpu_limit
-    # resources[0]['memory'] += memory_limit
+    resources[0]['cpu'] += cpu_limit
+    resources[0]['memory'] += memory_limit
 
     optimize_result = {
         'resource': resources,
