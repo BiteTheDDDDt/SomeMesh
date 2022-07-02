@@ -20,9 +20,10 @@ def ready():
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     resources = []
     for container in containers:
+        cpu_limit -= container['cpu']
+        memory_limit -= container['memory']
+
         if container['container'] != 'istio-proxy':
-            cpu_limit -= container['cpu']
-            memory_limit -= container['memory']
             continue
 
         resource = {
