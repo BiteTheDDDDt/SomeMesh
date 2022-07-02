@@ -18,6 +18,7 @@ def ready():
 
 
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
+    '''
     resources = []
     for container in containers:
         cpu_limit -= container['cpu']
@@ -36,9 +37,13 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     assert(cpu_limit > 0 and memory_limit > 0)
     resources[0]['cpu'] += cpu_limit
     resources[0]['memory'] += memory_limit
-
+    '''
     optimize_result = {
-        'resource': [],
+        'resource': [{
+            'service': containers[0]['service_name'],  # 需要修改资源分配的Sidecar所属服务
+            'cpu': cpu_limit,  # 需要为该服务Sidecar设置的CPU资源上限，单位：核
+            'memory': memory_limit  # 需要为该服务Sidecar设置的内存资源上限，单位：Byte
+        }],
         # 通过istio_cr字段向服务网格应用Sidecar或EnvoyFilter资源来进行优化
         'istio_cr': [sidecar_example],
         'features': {
