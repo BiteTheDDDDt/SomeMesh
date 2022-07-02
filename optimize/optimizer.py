@@ -32,13 +32,13 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         cpu_limit -= resource['cpu']
         memory_limit -= resource['memory']
         resources.append(resource)
-        break
 
+    assert(cpu_limit > 0 and memory_limit > 0)
     resources[0]['cpu'] += cpu_limit
     resources[0]['memory'] += memory_limit
 
     optimize_result = {
-        'resource': resources,
+        'resource': [],
         # 通过istio_cr字段向服务网格应用Sidecar或EnvoyFilter资源来进行优化
         'istio_cr': [sidecar_example],
         'features': {
