@@ -69,20 +69,19 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         else:
             service_map[service_name][pod_name][1] = container
 
+    sum_size = sum([len(service_map[service_name])
+                   for service_name in service_map])
+    cpu_per = 1.0*cpu_limit/sum_size-eps
+    memory_per = memory_limit//sum_size
+
     resources = []
     for service_name in service_map:
         size = len(service_map[service_name])
 
         resource = {
-            'service': service_name, 'cpu': lowest_cpu, 'memory': lowest_memory}
+            'service': service_name, 'cpu': cpu_per, 'memory': memory_per}
 
-        cpu_limit -= size*resource['cpu']
-        memory_limit -= size*resource['memory']
         resources.append(resource)
-
-    size = len(service_map[resources[0]['service']])
-    resources[0]['cpu'] += cpu_limit/size-eps
-    resources[0]['memory'] += int(memory_limit/size-eps)
 
     optimize_result = {
         'resource': resources,
