@@ -13,6 +13,8 @@ spec:
 '''
 
 eps = 1e-12
+lowest_cpu = 0.1
+lowest_memory = 128000000
 
 
 def ready():
@@ -27,9 +29,17 @@ def check_result_valid(resources, service_map, cpu_limit, memory_limit):
         return False
 
     for resource in resources:
-        size = len(service_map[resource['service']])*2
+        size = len(service_map[resource['service']])
         cpu_limit -= size*resource['cpu']
         memory_limit -= size*resource['memory']
+
+        try:
+            assert(resource['cpu'] >=
+                   lowest_cpu and resource['memory'] >= lowest_memory)
+        except:
+            print("resource['cpu']>=lowest_cpu and resource['memory']>=lowest_memory",
+                  resource['cpu'], resource['memory'])
+            return False
 
     try:
         assert(cpu_limit >= 0 and memory_limit >= 0)
@@ -41,6 +51,10 @@ def check_result_valid(resources, service_map, cpu_limit, memory_limit):
 
 
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
+    # TODO: Investigate why we should reduce lowest here.
+    cpu_limit -= lowest_cpu
+    memory_limit -= lowest_memory
+
     cpu_limit_real = cpu_limit
     memory_limit_real = memory_limit
 
@@ -61,16 +75,16 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     resources = []
     for service_name in service_map:
-        size = len(service_map[service_name])*2
+        size = len(service_map[service_name])
 
         resource = {
-            'service': service_name, 'cpu': 0.1, 'memory': 128000000}
+            'service': service_name, 'cpu': lowest_cpu, 'memory': lowest_memory}
 
         cpu_limit -= size*resource['cpu']
         memory_limit -= size*resource['memory']
         resources.append(resource)
 
-    size = len(service_map[resources[0]['service']])*2
+    size = len(service_map[resources[0]['service']])
     resources[0]['cpu'] += cpu_limit/size-eps
     resources[0]['memory'] += int(memory_limit/size-eps)
 
