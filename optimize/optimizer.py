@@ -72,7 +72,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     size = len(service_map[resources[0]['service']])
     resources[0]['cpu'] += cpu_limit/size-eps
-    resources[0]['memory'] += memory_limit/size-eps
+    resources[0]['memory'] += int(memory_limit/size-eps)
 
     optimize_result = {
         'resource': resources,
