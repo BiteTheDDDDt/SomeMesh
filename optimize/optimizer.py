@@ -17,33 +17,50 @@ def ready():
     return 200
 
 
-def optimize(containers, accesslog_path, cpu_limit, memory_limit):
-    '''
-    resources = []
-    for container in containers:
-        cpu_limit -= container['cpu']
-        memory_limit -= container['memory']
+def check_result_valid(resources, service_map, cpu_limit, memory_limit):
+    for resource in resources:
+        size = len(service_map[resource['service']])
+        cpu_limit -= size*resource['cpu']
+        memory_limit -= size*resource['memory']
+    assert(cpu_limit >= 0 and memory_limit >= 0)
 
-        if container['container'] != 'istio-proxy':
-            continue
+
+def optimize(containers, accesslog_path, cpu_limit, memory_limit):
+    cpu_limit_real = cpu_limit
+    memory_limit_real = memory_limit
+
+    service_map = {}
+    for container in containers:
+        service_name = container['service_name']
+        pod_name = container['pod_name']
+
+        if service_name not in service_map:
+            service_map[service_name] = {}
+        if pod_name not in service_map[service_name]:
+            service_map[service_name][pod_name] = [0, 0]
+
+        if container['container'] == 'istio-proxy':
+            service_map[service_name][pod_name][0] = container
+        else:
+            service_map[service_name][pod_name][1] = container
+
+    resources = []
+    for service_name in service_map:
+        size = len(service_map[service_name])
 
         resource = {
-            'service': container['service_name'], 'cpu': 0.1, 'memory': 128000000}
+            'service': service_name, 'cpu': 0.1, 'memory': 128000000}
 
-        cpu_limit -= resource['cpu']
-        memory_limit -= resource['memory']
+        cpu_limit -= size*resource['cpu']
+        memory_limit -= size*resource['memory']
         resources.append(resource)
 
-    assert(cpu_limit > 0 and memory_limit > 0)
-    resources[0]['cpu'] += cpu_limit
-    resources[0]['memory'] += memory_limit
-    '''
+    size = len(service_map[resources[0]['service']])
+    resources[0]['cpu'] += cpu_limit/size
+    resources[0]['memory'] += memory_limit/size
+
     optimize_result = {
-        'resource': [{
-            'service': containers[0]['service_name'],  # 需要修改资源分配的Sidecar所属服务
-            'cpu': cpu_limit,  # 需要为该服务Sidecar设置的CPU资源上限，单位：核
-            'memory': memory_limit  # 需要为该服务Sidecar设置的内存资源上限，单位：Byte
-        }],
+        'resource': resources,
         # 通过istio_cr字段向服务网格应用Sidecar或EnvoyFilter资源来进行优化
         'istio_cr': [sidecar_example],
         'features': {
@@ -56,4 +73,6 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         }
     }
 
+    check_result_valid(resources, service_map,
+                       cpu_limit_real, memory_limit_real)
     return optimize_result
