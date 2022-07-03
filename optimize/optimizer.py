@@ -51,10 +51,6 @@ def check_result_valid(resources, service_map, cpu_limit, memory_limit):
 
 
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
-    # TODO: Investigate why we should reduce lowest here.
-    cpu_limit -= lowest_cpu
-    memory_limit -= lowest_memory
-
     cpu_limit_real = cpu_limit
     memory_limit_real = memory_limit
 
