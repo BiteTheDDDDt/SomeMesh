@@ -27,7 +27,7 @@ def check_result_valid(resources, service_map, cpu_limit, memory_limit):
         return False
 
     for resource in resources:
-        size = len(service_map[resource['service']])
+        size = len(service_map[resource['service']])*2
         cpu_limit -= size*resource['cpu']
         memory_limit -= size*resource['memory']
 
@@ -61,7 +61,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     resources = []
     for service_name in service_map:
-        size = len(service_map[service_name])
+        size = len(service_map[service_name])*2
 
         resource = {
             'service': service_name, 'cpu': 0.1, 'memory': 128000000}
@@ -70,7 +70,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         memory_limit -= size*resource['memory']
         resources.append(resource)
 
-    size = len(service_map[resources[0]['service']])
+    size = len(service_map[resources[0]['service']])*2
     resources[0]['cpu'] += cpu_limit/size-eps
     resources[0]['memory'] += int(memory_limit/size-eps)
 
