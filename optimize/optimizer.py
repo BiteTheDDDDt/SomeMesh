@@ -103,7 +103,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     offset = 0
     for service_name in service_map:
-        resources[offset]['cpu'] += avg_cpu[service_name]/sum_cpu*cpu_limit
+        resources[offset]['cpu'] += avg_cpu[service_name]/sum_cpu*cpu_limit-eps
         resources[offset]['memory'] += int(
             avg_memory[service_name]/sum_memory*memory_limit)
         offset += 1
