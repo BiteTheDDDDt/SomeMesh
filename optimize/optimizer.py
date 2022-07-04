@@ -75,6 +75,14 @@ def get_ip_to_service(containers):
     return ip_to_service
 
 
+def update_request(ip, ip_to_service, request_number_map, request_byte_map, accesslog):
+    if ip in ip_to_service:
+        service_name = ip_to_service[ip]
+        request_number_map[service_name] += 1
+        request_byte_map[service_name] += accesslog['bytes_sent'] + \
+            accesslog['bytes_received']
+
+
 def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     cpu_limit_real = cpu_limit
     memory_limit_real = memory_limit
@@ -88,16 +96,14 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     with open(accesslog_path, 'r', encoding='utf-8') as accesslog_file:
         for line in accesslog_file:
             accesslog = json.loads(line)
+
             post_ip = accesslog['downstream_remote_address'].split(':')[0]
+            update_request(post_ip, ip_to_service,
+                           request_number_map, request_byte_map, accesslog)
+
             get_ip = accesslog['upstream_host'].split(':')[0]
-
-            request_number_map[ip_to_service[post_ip]] += 1
-            request_number_map[ip_to_service[get_ip]] += 1
-
-            request_byte_map[ip_to_service[post_ip]
-                             ] += accesslog['bytes_sent']+accesslog['bytes_received']
-            request_byte_map[ip_to_service[get_ip]
-                             ] += accesslog['bytes_sent']+accesslog['bytes_received']
+            update_request(get_ip, ip_to_service,
+                           request_number_map, request_byte_map, accesslog)
 
     request_number_sum = sum([request_number_map[service_name]
                              for service_name in request_number_map])
@@ -113,7 +119,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     for service_name in service_map:
         size = len(service_map[service_name])
-        resource_map[service_name]['cpu'] += request_number_map[service_name] / \
+        resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
             request_number_sum*cpu_limit/size-eps
         resource_map[service_name]['memory'] += int(
             request_byte_map[service_name]/request_byte_sum*memory_limit/size)
@@ -131,5 +137,5 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         }
     }
 
-    #assert(check_result_valid(resources, service_map,  cpu_limit_real, memory_limit_real))
+    # assert(check_result_valid(resources, service_map,  cpu_limit_real, memory_limit_real))
     return optimize_result
