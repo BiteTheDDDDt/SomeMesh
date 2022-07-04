@@ -71,7 +71,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     sum_size = sum([len(service_map[service_name])
                    for service_name in service_map])
-    cpu_per = 1.0*cpu_limit/sum_size-eps
+    cpu_per = 1.0*cpu_limit/sum_size
     memory_per = memory_limit//sum_size
 
     resources = []
