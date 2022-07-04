@@ -76,8 +76,6 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     resources = []
     for service_name in service_map:
-        size = len(service_map[service_name])
-
         resource = {
             'service': service_name, 'cpu': cpu_per, 'memory': memory_per}
 
@@ -89,7 +87,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'features': {
             'multi_buffer': {
                 'enabled': True,
-                'poll_delay': '0.2s'
+                'poll_delay': '0.1s'
             }
         }
     }
