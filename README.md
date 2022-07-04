@@ -58,8 +58,8 @@ POST request body为json格式，提供两个json数组，其中pods是当前集
 ```json
 {
   "containers":[
-    {"service_name": "productpage", "pod_name": "productpage-12345", "container": "productpage", "ip":"10.12.123.33", "app": 1, "sidecar": 0.1}, 
-    {"service_name": "reviews", "pod_name": "reviews-67890", "container": "istio-proxy",  "ip":"10.12.123.34", "app": 1, "sidecar": 0.1}
+    {"service_name": "productpage", "pod_name": "productpage-12345", "container": "productpage", "ip":"10.12.123.33", "memory": 1, "cpu": 0.1}, 
+    {"service_name": "reviews", "pod_name": "reviews-67890", "container": "istio-proxy",  "ip":"10.12.123.34", "memory": 1, "cpu": 0.1}
    ], 
   "accesslog_path": "/path/to/accesslog",
   "cpu_limit": 12,
