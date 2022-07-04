@@ -93,6 +93,16 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     request_number_map = {}
     request_byte_map = {}
+
+    for service_name in service_map:
+        size = len(service_map[service_name])
+        request_number_map[service_name] = 0
+        request_byte_map[service_name] = 0
+        resource_map[service_name] = {
+            'service': service_name, 'cpu': lowest_cpu, 'memory': lowest_memory}
+        cpu_limit -= size*lowest_cpu
+        memory_limit -= size*lowest_memory
+
     with open(accesslog_path, 'r', encoding='utf-8') as accesslog_file:
         for line in accesslog_file:
             accesslog = json.loads(line)
@@ -112,15 +122,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     for service_name in service_map:
         size = len(service_map[service_name])
-        resource_map[service_name] = {
-            'service': service_name, 'cpu': lowest_cpu, 'memory': lowest_memory}
-        cpu_limit -= size*lowest_cpu
-        memory_limit -= size*lowest_memory
-
-    for service_name in service_map:
-        size = len(service_map[service_name])
         resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
-            request_number_sum*cpu_limit/size-eps
+            request_number_sum*cpu_limit/size
         resource_map[service_name]['memory'] += int(
             request_byte_map[service_name]/request_byte_sum*memory_limit/size)
 
@@ -137,5 +140,6 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         }
     }
 
-    # assert(check_result_valid(resources, service_map,  cpu_limit_real, memory_limit_real))
+    # assert(check_result_valid(resources, service_map,
+    #       cpu_limit_real, memory_limit_real))
     return optimize_result
