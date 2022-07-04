@@ -50,10 +50,7 @@ def check_result_valid(resources, service_map, cpu_limit, memory_limit):
     return True
 
 
-def optimize(containers, accesslog_path, cpu_limit, memory_limit):
-    cpu_limit_real = cpu_limit
-    memory_limit_real = memory_limit
-
+def get_service_map(containers):
     service_map = {}
     for container in containers:
         service_name = container['service_name']
@@ -62,24 +59,54 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         if service_name not in service_map:
             service_map[service_name] = {}
         if pod_name not in service_map[service_name]:
-            service_map[service_name][pod_name] = [None, None]
+            service_map[service_name][pod_name] = [None, None, None]
 
         if container['container'] == 'istio-proxy':
             service_map[service_name][pod_name][0] = container
         else:
             service_map[service_name][pod_name][1] = container
+    return service_map
 
-    sum_size = sum([len(service_map[service_name])
-                   for service_name in service_map])
-    cpu_per = 1.0*cpu_limit/sum_size
-    memory_per = memory_limit//sum_size
+
+def optimize(containers, accesslog_path, cpu_limit, memory_limit):
+    cpu_limit_real = cpu_limit
+    memory_limit_real = memory_limit
+
+    service_map = get_service_map(containers)
 
     resources = []
-    for service_name in service_map:
-        resource = {
-            'service': service_name, 'cpu': cpu_per, 'memory': memory_per}
 
+    avg_cpu = {}
+    avg_memory = {}
+    for service_name in service_map:
+        size = len(service_map[service_name])
+        service_cpu = 0
+        service_memory = 0
+        for pod_name in service_map[service_name]:
+            proxy = service_map[service_name][pod_name][0]
+            service_cpu += proxy['cpu']
+            service_memory += proxy['memory']
+
+        avg_cpu[service_name] = 1.0*service_cpu/size
+        avg_memory[service_name] = 1.0*service_memory/size
+
+        resource = {
+            'service': service_name, 'cpu': lowest_cpu, 'memory': lowest_memory}
+        cpu_limit -= size*lowest_cpu
+        memory_limit -= size*lowest_memory
         resources.append(resource)
+
+    sum_cpu = sum([avg_cpu[service_name] * len(service_map[service_name])
+                  for service_name in avg_cpu])
+    sum_memory = sum([avg_memory[service_name] * len(service_map[service_name])
+                     for service_name in avg_memory])
+
+    offset = 0
+    for service_name in service_map:
+        resources[offset]['cpu'] += avg_cpu[service_name]/sum_cpu*cpu_limit
+        resources[offset]['memory'] += int(
+            avg_memory[service_name]/sum_memory*memory_limit)
+        offset += 1
 
     optimize_result = {
         'resource': resources,
