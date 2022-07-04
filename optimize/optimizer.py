@@ -119,6 +119,6 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         }
     }
 
-    assert(check_result_valid(resources, service_map,
-                              cpu_limit_real, memory_limit_real))
+    # assert(check_result_valid(resources, service_map,
+    #                           cpu_limit_real, memory_limit_real))
     return optimize_result
