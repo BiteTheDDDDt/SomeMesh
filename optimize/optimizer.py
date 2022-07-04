@@ -73,8 +73,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     memory_limit_real = memory_limit
 
     service_map = get_service_map(containers)
-
-    resources = []
+    resource_map = {}
 
     avg_cpu = {}
     avg_memory = {}
@@ -90,23 +89,23 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         avg_cpu[service_name] = 1.0*service_cpu/size
         avg_memory[service_name] = 1.0*service_memory/size
 
-        resource = {
+        resource_map[service_name] = {
             'service': service_name, 'cpu': lowest_cpu, 'memory': lowest_memory}
         cpu_limit -= size*lowest_cpu
         memory_limit -= size*lowest_memory
-        resources.append(resource)
 
     sum_cpu = sum([avg_cpu[service_name] * len(service_map[service_name])
                   for service_name in avg_cpu])
     sum_memory = sum([avg_memory[service_name] * len(service_map[service_name])
                      for service_name in avg_memory])
 
-    offset = 0
     for service_name in service_map:
-        resources[offset]['cpu'] += avg_cpu[service_name]/sum_cpu*cpu_limit-eps
-        resources[offset]['memory'] += int(
+        resource_map[service_name]['cpu'] += avg_cpu[service_name] / \
+            sum_cpu*cpu_limit-eps
+        resource_map[service_name]['memory'] += int(
             avg_memory[service_name]/sum_memory*memory_limit)
-        offset += 1
+
+    resources = [resource_map[service_name] for service_name in resource_map]
 
     optimize_result = {
         'resource': resources,
@@ -119,6 +118,5 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         }
     }
 
-    # assert(check_result_valid(resources, service_map,
-    #                           cpu_limit_real, memory_limit_real))
+    #assert(check_result_valid(resources, service_map,  cpu_limit_real, memory_limit_real))
     return optimize_result
