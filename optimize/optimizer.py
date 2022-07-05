@@ -53,6 +53,9 @@ def check_result_valid(resources, service_map, cpu_limit, memory_limit):
 def get_service_map(containers):
     service_map = {}
     for container in containers:
+        if container['container'] != 'istio-proxy':
+            continue
+
         service_name = container['service_name']
         pod_name = container['pod_name']
 
@@ -143,5 +146,5 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     }
 
     assert(check_result_valid(resources, service_map,
-          cpu_limit_real, memory_limit_real))
+                              cpu_limit_real, memory_limit_real))
     return optimize_result
