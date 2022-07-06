@@ -123,6 +123,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     request_byte_sum = sum([request_byte_map[service_name]
                            for service_name in request_byte_map])
 
+    memory_limit *= 0.5
+
     for service_name in service_map:
         size = len(service_map[service_name])
         if request_number_sum > 0 and request_number_map[service_name] > 0:
