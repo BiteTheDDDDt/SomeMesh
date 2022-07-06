@@ -93,6 +93,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     request_number_map = {}
     request_byte_map = {}
+    cpu_max_map = {}
 
     for service_name in service_map:
         size = len(service_map[service_name])
@@ -103,7 +104,12 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         cpu_limit -= size*lowest_cpu
         memory_limit -= size*lowest_memory
 
-    with open(accesslog_path, 'r', encoding='utf-8') as accesslog_file:
+        cpu_max_map[service_name] = 0
+        for pod_name in service_map[service_name]:
+            if(cpu_max_map[service_name] < service_map[service_name][pod_name][0]['cpu']):
+                cpu_max_map[service_name] = service_map[service_name][pod_name][0]['cpu']
+
+    with open(accesslog_path, 'r') as accesslog_file:
         for line in accesslog_file:
             accesslog = json.loads(line)
 
@@ -125,11 +131,12 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
 
     for service_name in service_map:
         size = len(service_map[service_name])
-        if request_byte_sum > 0 and request_byte_map[service_name] > 0:
-            resource_map[service_name]['cpu'] += 1.0*request_byte_map[service_name] / \
-                request_byte_sum*cpu_limit/size-eps
-            #resource_map[service_name]['memory'] += int(
-            #    request_number_map[service_name]/request_number_sum*memory_limit/size)
+        if request_number_sum > 0 and request_number_map[service_name] > 0:
+            resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
+                request_number_sum*cpu_limit/size-eps
+            if(resource_map[service_name]['cpu'] > cpu_max_map[service_name]):
+                resource_map[service_name]['cpu'] = max(
+                    cpu_max_map[service_name], lowest_cpu)
 
     resources = [resource_map[service_name] for service_name in resource_map]
 
