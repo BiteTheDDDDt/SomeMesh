@@ -134,9 +134,9 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         if request_number_sum > 0 and request_number_map[service_name] > 0:
             resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
                 request_number_sum*cpu_limit/size-eps
-            if(resource_map[service_name]['cpu'] > cpu_max_map[service_name]):
+            if(cpu_max_map[service_name] != 0 and resource_map[service_name]['cpu'] > cpu_max_map[service_name]*2):
                 resource_map[service_name]['cpu'] = max(
-                    cpu_max_map[service_name], lowest_cpu)
+                    cpu_max_map[service_name]*2, lowest_cpu)
 
     resources = [resource_map[service_name] for service_name in resource_map]
 
