@@ -127,7 +127,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
                            for service_name in request_byte_map])
 
     # cpu_limit *= 0.5
-    memory_limit *= 0.1
+    memory_limit *= 0.2
 
     for service_name in service_map:
         size = len(service_map[service_name])
@@ -144,7 +144,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'istio_cr': [sidecar_example],
         'features': {
             'multi_buffer': {
-                'enabled': False,
+                'enabled': True,
+                'poll_delay': '0.1s'
             }
         }
     }
