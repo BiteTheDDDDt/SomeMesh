@@ -5,7 +5,7 @@ sample文件夹内部提供了传给参赛者程序的数据的实际示例，�
 示例数据的产生方式为：在一个运行着Istio官方示例应用[Bookinfo](https://istio.io/latest/docs/examples/bookinfo/)的已安装服务网格的Kubernetes集群中，用fortio对Bookinfo应用进行压力测试，并收集容器资源用量和访问日志信息。
 
 示例数据中提供了两组数据：
-* podInfo-1.json和accesslog-1.txt：这组数据是在网格内所有Sidecar资源上限都设定为2核、1G的情况下测试得出的。
+* podInfo-1.json和accesslog-1.txt：这组数据是在网格内所有Sidecar资源上限都设定为1核、2G的情况下测试得出的。
 * podInfo-2.json和accesslog-2.txt：这组数据是在网格内所有Sidecar资源上限都设定为0.1核、128Mi的情况下测试得出的。
 
 ## 测试方法
