@@ -139,7 +139,9 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
             resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
                 request_number_sum*cpu_limit/size-eps
             resource_map[service_name]['memory'] += int(
-               request_number_map[service_name]/request_number_sum*memory_limit/size)
+                request_number_map[service_name]/request_number_sum*memory_limit/size)
+            if resource_map[service_name]['cpu'] > 1:
+                resource_map[service_name]['cpu'] = 1
 
     resources = [resource_map[service_name] for service_name in resource_map]
 
