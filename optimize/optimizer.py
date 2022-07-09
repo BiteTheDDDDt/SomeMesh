@@ -130,7 +130,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     request_byte_sum = sum([request_byte_map[service_name]
                            for service_name in request_byte_map])
 
-    cpu_limit *= 0.8
+    # cpu_limit *= 0.5
     memory_limit *= 0.2
 
     for service_name in service_map:
@@ -138,8 +138,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         if request_number_sum > 0 and request_number_map[service_name] > 0:
             resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
                 request_number_sum*cpu_limit/size-eps
-            # resource_map[service_name]['memory'] += int(
-            #    request_number_map[service_name]/request_number_sum*memory_limit/size)
+            resource_map[service_name]['memory'] += int(
+               request_number_map[service_name]/request_number_sum*memory_limit/size)
 
     resources = [resource_map[service_name] for service_name in resource_map]
 
