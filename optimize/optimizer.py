@@ -131,7 +131,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
                            for service_name in request_byte_map])
 
     # cpu_limit *= 0.5
-    memory_limit *= 0.1
+    memory_limit *= 0.05
 
     for service_name in service_map:
         size = len(service_map[service_name])
@@ -140,8 +140,6 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
                 request_number_sum*cpu_limit/size-eps
             resource_map[service_name]['memory'] += int(
                 request_number_map[service_name]/request_number_sum*memory_limit/size)
-            if resource_map[service_name]['cpu'] > 1:
-                resource_map[service_name]['cpu'] = 1
 
     resources = [resource_map[service_name] for service_name in resource_map]
 
@@ -151,7 +149,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'features': {
             'multi_buffer': {
                 'enabled': False,
-                'poll_delay': '0.5s'
+                'poll_delay': '0s'
             }
         }
     }
