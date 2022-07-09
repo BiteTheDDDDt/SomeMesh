@@ -6,6 +6,10 @@ kind: Sidecar
 metadata:
   name: default
 spec:
+  template:
+    metadata:
+      annotations:
+        proxy.istio.io/config: 'concurrency: 4'
   egress:
   - hosts:
     - "./*"
