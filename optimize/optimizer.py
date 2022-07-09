@@ -9,7 +9,7 @@ spec:
   template:
     metadata:
       annotations:
-        proxy.istio.io/config: 'concurrency: 2'
+        proxy.istio.io/config: 'concurrency: 1'
   egress:
   - hosts:
     - "./*"
@@ -131,7 +131,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
                            for service_name in request_byte_map])
 
     # cpu_limit *= 0.5
-    memory_limit *= 0.06
+    memory_limit *= 0.05
 
     for service_name in service_map:
         size = len(service_map[service_name])
