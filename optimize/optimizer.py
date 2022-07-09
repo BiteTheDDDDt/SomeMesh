@@ -131,7 +131,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
                            for service_name in request_byte_map])
 
     # cpu_limit *= 0.5
-    memory_limit *= 0.05
+    memory_limit *= 0.07
 
     for service_name in service_map:
         size = len(service_map[service_name])
