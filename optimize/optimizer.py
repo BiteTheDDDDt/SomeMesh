@@ -9,7 +9,7 @@ spec:
   template:
     metadata:
       annotations:
-        proxy.istio.io/config: 'concurrency: 10'
+        proxy.istio.io/config: 'concurrency: 2'
   egress:
   - hosts:
     - "./*"
@@ -149,7 +149,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'features': {
             'multi_buffer': {
                 'enabled': False,
-                'poll_delay': '0s'
+                'poll_delay': '0.01s'
             }
         }
     }
