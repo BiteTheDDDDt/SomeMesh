@@ -9,7 +9,7 @@ spec:
   template:
     metadata:
       annotations:
-        proxy.istio.io/config: 'concurrency: 1'
+        proxy.istio.io/config: 'concurrency: 10'
   egress:
   - hosts:
     - "./*"
