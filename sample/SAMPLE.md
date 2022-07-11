@@ -26,7 +26,7 @@ docker run -p 8000:3001 -d test-optimizer
 2. 将访问日志提前拷贝至容器中路径
 
 ```bash
-docker cp sample/accesslog-1.txt fdb8b2595386:/app/accesslog.txt
+docker cp sample/accesslog-1.txt {你的容器id}:/app/accesslog.txt
 ```
 
 3. 利用示例数据生成请求内容，并请求自己的容器
