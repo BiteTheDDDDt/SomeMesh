@@ -82,7 +82,7 @@ def get_ip_to_service(containers):
 def update_request(ip, ip_to_service, request_number_map, request_byte_map, accesslog):
     if ip in ip_to_service:
         service_name = ip_to_service[ip]
-        request_number_map[service_name] += 10000000
+        request_number_map[service_name] += 100000
         request_number_map[service_name] += accesslog['bytes_sent'] + \
             accesslog['bytes_received']
 
