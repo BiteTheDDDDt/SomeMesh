@@ -1,4 +1,6 @@
 import json
+from math import log2
+import math
 
 sidecar_example = '''
 apiVersion: networking.istio.io/v1alpha3
@@ -82,7 +84,8 @@ def get_ip_to_service(containers):
 def update_request(service_map, ip, ip_to_service, request_number_map, request_byte_map, accesslog):
     if ip in ip_to_service:
         service_name = ip_to_service[ip]
-        request_number_map[service_name] += 1000.0
+        request_number_map[service_name] += 1000.0 / \
+            math.sqrt(len(service_map[service_name]))
         request_byte_map[service_name] += accesslog['bytes_sent'] + \
             accesslog['bytes_received']
 
@@ -148,8 +151,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'istio_cr': [sidecar_example],
         'features': {
             'multi_buffer': {
-                'enabled': False,
-                'poll_delay': '0.01s'
+                'enabled': True,
+                'poll_delay': '0.05s'
             }
         }
     }
