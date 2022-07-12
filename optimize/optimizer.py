@@ -79,12 +79,11 @@ def get_ip_to_service(containers):
     return ip_to_service
 
 
-def update_request(ip, ip_to_service, request_number_map, request_byte_map, accesslog):
+def update_request(service_map, ip, ip_to_service, request_number_map, request_byte_map, accesslog):
     if ip in ip_to_service:
         service_name = ip_to_service[ip]
-        request_number_map[service_name] += 500
-        request_number_map[service_name] -= accesslog['bytes_sent'] + \
-            accesslog['bytes_received']
+        request_number_map[service_name] += 1000.0 / \
+            len(service_map[service_name])
         request_byte_map[service_name] += accesslog['bytes_sent'] + \
             accesslog['bytes_received']
 
@@ -120,11 +119,11 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
             accesslog = json.loads(line)
 
             post_ip = accesslog['downstream_remote_address'].split(':')[0]
-            update_request(post_ip, ip_to_service,
+            update_request(service_map, post_ip, ip_to_service,
                            request_number_map, request_byte_map, accesslog)
 
             get_ip = accesslog['upstream_host'].split(':')[0]
-            update_request(get_ip, ip_to_service,
+            update_request(service_map, get_ip, ip_to_service,
                            request_number_map, request_byte_map, accesslog)
 
     request_number_sum = sum([request_number_map[service_name]
