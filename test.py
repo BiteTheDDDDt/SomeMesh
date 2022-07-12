@@ -1,7 +1,7 @@
 import requests
 import json
 
-with open("sample/podInfo-1.json", "r", encoding="utf-8") as podInfoFile:
+with open("sample/podInfo-2.json", "r", encoding="utf-8") as podInfoFile:
     podInfo = json.load(podInfoFile)
     payload = {
      'accesslog_path': '/app/accesslog.txt',
