@@ -142,8 +142,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         if request_number_sum > 0 and request_number_map[service_name] > 0:
             resource_map[service_name]['cpu'] += 1.0*request_number_map[service_name] / \
                 request_number_sum*cpu_limit/size-eps
-            # resource_map[service_name]['memory'] += int(
-            #    request_number_map[service_name]/request_number_sum*memory_limit/size)
+            resource_map[service_name]['memory'] += int(
+               request_number_map[service_name]/request_number_sum*memory_limit/size)
 
     resources = [resource_map[service_name] for service_name in resource_map]
 
@@ -152,7 +152,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'istio_cr': [sidecar_example],
         'features': {
             'multi_buffer': {
-                'enabled': True,
+                'enabled': False,
                 'poll_delay': '0.001s'
             }
         }
