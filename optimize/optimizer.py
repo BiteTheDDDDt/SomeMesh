@@ -152,8 +152,8 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'istio_cr': [sidecar_example],
         'features': {
             'multi_buffer': {
-                'enabled': False,
-                'poll_delay': '0.001s'
+                'enabled': True,
+                'poll_delay': '1s'
             }
         }
     }
