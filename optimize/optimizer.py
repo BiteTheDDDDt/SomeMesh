@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       annotations:
-        proxy.istio.io/config: 'concurrency: 3'
+        proxy.istio.io/config: 'concurrency: 1'
   egress:
   - hosts:
     - "./*"
