@@ -1,7 +1,6 @@
 import json
 from math import log2
 import math
-from tkinter import E
 
 sidecar_example = '''
 apiVersion: networking.istio.io/v1alpha3
@@ -12,7 +11,7 @@ spec:
   template:
     metadata:
       annotations:
-        proxy.istio.io/config: 'concurrency: 2'
+        proxy.istio.io/config: 'concurrency: 3'
   egress:
   - hosts:
     - "./*"
@@ -153,7 +152,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'features': {
             'multi_buffer': {
                 'enabled': True,
-                'poll_delay': '2s'
+                'poll_delay': '0.3s'
             }
         }
     }
