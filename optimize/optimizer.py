@@ -152,7 +152,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
         'features': {
             'multi_buffer': {
                 'enabled': True,
-                'poll_delay': '0.3s'
+                'poll_delay': '3s'
             }
         }
     }
