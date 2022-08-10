@@ -85,7 +85,7 @@ def update_request(service_map, ip, ip_to_service, request_number_map, request_b
     if ip in ip_to_service:
         service_name = ip_to_service[ip]
         request_number_map[service_name] += 1000.0 / \
-            (len(service_map[service_name])**(0.3))
+            (len(service_map[service_name])**(0.8))
         request_byte_map[service_name] += accesslog['bytes_sent'] + \
             accesslog['bytes_received']
 
@@ -133,7 +133,7 @@ def optimize(containers, accesslog_path, cpu_limit, memory_limit):
     request_byte_sum = sum([request_byte_map[service_name]
                            for service_name in request_byte_map])
 
-    cpu_limit *= 0.55
+    cpu_limit *= 0.6
     memory_limit *= 0
 
     for service_name in service_map:
